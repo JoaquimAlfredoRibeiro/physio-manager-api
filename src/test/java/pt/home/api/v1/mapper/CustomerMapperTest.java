@@ -1,12 +1,16 @@
 package pt.home.api.v1.mapper;
 
 import org.junit.Test;
+import pt.home.api.v1.model.ConsultationDTO;
 import pt.home.api.v1.model.CustomerDTO;
+import pt.home.api.v1.model.PathologyDTO;
 import pt.home.domain.Consultation;
 import pt.home.domain.Customer;
 import pt.home.domain.Pathology;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -28,6 +32,14 @@ public class CustomerMapperTest {
     Consultation consultation1 = Consultation.builder().dateTime(DATE_TIME_1).description("Consultation 1").build();
     Consultation consultation2 = Consultation.builder().dateTime(DATE_TIME_2).description("Consultation 2").build();
 
+    //PathologiesDTO
+    PathologyDTO pathology1DTO = PathologyDTO.builder().name("Pathology1").description("description1").build();
+    PathologyDTO pathology2DTO = PathologyDTO.builder().name("Pathology2").description("description2").build();
+
+    //ConsultationsDTO
+    ConsultationDTO consultation1DTO = ConsultationDTO.builder().dateTime(DATE_TIME_1).description("Consultation 1").build();
+    ConsultationDTO consultation2DTO = ConsultationDTO.builder().dateTime(DATE_TIME_2).description("Consultation 2").build();
+
     CustomerMapper customerMapper = CustomerMapper.INSTANCE;
 
     @Test
@@ -36,17 +48,17 @@ public class CustomerMapperTest {
         //given
         Customer customer = Customer.builder().fullName(FULLNAME).phoneNumber(PHONE_NUMBER).email(EMAIL).address(ADDRESS).build();
 
-//        Set<Pathology> pathologies = new HashSet<>();
-//        pathologies.add(pathology1);
-//        pathologies.add(pathology2);
-//
-//        customer.setPathologies(pathologies);
-//
-//        Set<Consultation> consultations = new HashSet<>();
-//        consultations.add(consultation1);
-//        consultations.add(consultation2);
-//
-//        customer.setConsultations(consultations);
+        Set<Pathology> pathologies = new HashSet<>();
+        pathologies.add(pathology1);
+        pathologies.add(pathology2);
+
+        customer.setPathologies(pathologies);
+
+        Set<Consultation> consultations = new HashSet<>();
+        consultations.add(consultation1);
+        consultations.add(consultation2);
+
+        customer.setConsultations(consultations);
 
         //when
         CustomerDTO customerDTO = customerMapper.customerToCustomerDTO(customer);
@@ -56,8 +68,8 @@ public class CustomerMapperTest {
         assertEquals(PHONE_NUMBER, customerDTO.getPhoneNumber());
         assertEquals(EMAIL, customerDTO.getEmail());
         assertEquals(ADDRESS, customerDTO.getAddress());
-//        assertEquals(pathologies, customerDTO.getPathologies());
-//        assertEquals(consultations, customerDTO.getConsultations());
+        assertEquals(pathologies.stream().findFirst().get().getId(), customerDTO.getPathologies().stream().findFirst().get().getId());
+        assertEquals(consultations.stream().findFirst().get().getId(), customerDTO.getConsultations().stream().findFirst().get().getId());
     }
 
     @Test
@@ -66,17 +78,17 @@ public class CustomerMapperTest {
         //given
         CustomerDTO customerDTO = CustomerDTO.builder().fullName(FULLNAME).phoneNumber(PHONE_NUMBER).email(EMAIL).address(ADDRESS).build();
 
-//        Set<Pathology> pathologies = new HashSet<>();
-//        pathologies.add(pathology1);
-//        pathologies.add(pathology2);
-//
-//        customerDTO.setPathologies(pathologies);
-//
-//        Set<Consultation> consultations = new HashSet<>();
-//        consultations.add(consultation1);
-//        consultations.add(consultation2);
-//
-//        customerDTO.setConsultations(consultations);
+        Set<PathologyDTO> pathologies = new HashSet<>();
+        pathologies.add(pathology1DTO);
+        pathologies.add(pathology2DTO);
+
+        customerDTO.setPathologies(pathologies);
+
+        Set<ConsultationDTO> consultations = new HashSet<>();
+        consultations.add(consultation1DTO);
+        consultations.add(consultation2DTO);
+
+        customerDTO.setConsultations(consultations);
 
         //when
         Customer customer = customerMapper.customerDTOToCustomer(customerDTO);
@@ -86,7 +98,7 @@ public class CustomerMapperTest {
         assertEquals(PHONE_NUMBER, customer.getPhoneNumber());
         assertEquals(EMAIL, customer.getEmail());
         assertEquals(ADDRESS, customer.getAddress());
-//        assertEquals(pathologies, customer.getPathologies());
-//        assertEquals(consultations, customer.getConsultations());
+        assertEquals(pathologies.stream().findFirst().get().getId(), customer.getPathologies().stream().findFirst().get().getId());
+        assertEquals(consultations.stream().findFirst().get().getId(), customer.getConsultations().stream().findFirst().get().getId());
     }
 }

@@ -8,12 +8,17 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import pt.home.api.v1.model.ConsultationDTO;
 import pt.home.api.v1.model.CustomerDTO;
+import pt.home.api.v1.model.PathologyDTO;
 import pt.home.controllers.v1.CustomerController;
 import pt.home.services.CustomerService;
 import pt.home.services.ResourceNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -127,5 +132,65 @@ public class CustomerControllerTest {
         mockMvc.perform(get(CustomerController.BASE_URL + "/111")
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testGetConsultationsByCustomerId() throws Exception {
+
+        Set<ConsultationDTO> consultation = new HashSet<>();
+        consultation.add(ConsultationDTO.builder()
+                                 .id(1L)
+                                 .dateTime(LocalDateTime.of(2019, 11, 10, 10, 30))
+                                 .description("Diagnosis Consultation")
+                                 .build());
+        consultation.add(ConsultationDTO.builder()
+                                 .id(2L)
+                                 .dateTime(LocalDateTime.of(2019, 11, 11, 11, 30))
+                                 .description("Follow-up Consultation")
+                                 .build());
+
+        //given
+        CustomerDTO customer1 = CustomerDTO.builder()
+                .fullName("John Doe")
+                .customerUrl(CustomerController.BASE_URL + "/1")
+                .consultations(consultation).build();
+
+        when(customerService.getCustomerById(anyLong())).thenReturn(customer1);
+
+        //then
+        mockMvc.perform(get(CustomerController.BASE_URL + "/1/consultations")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.consultations", hasSize(2)));
+    }
+
+    @Test
+    public void testGetPathologiesByCustomerId() throws Exception {
+
+        Set<PathologyDTO> pathologyDTOs = new HashSet<>();
+        pathologyDTOs.add(PathologyDTO.builder()
+                                 .id(1L)
+                                 .name("Broken Arm")
+                                 .description("Diagnosis Consultation")
+                                 .build());
+        pathologyDTOs.add(PathologyDTO.builder()
+                                 .id(2L)
+                                 .name("Broken Leg")
+                                 .description("Follow-up Consultation")
+                                 .build());
+
+        //given
+        CustomerDTO customer1 = CustomerDTO.builder()
+                .fullName("John Doe")
+                .customerUrl(CustomerController.BASE_URL + "/1")
+                .pathologies(pathologyDTOs).build();
+
+        when(customerService.getCustomerById(anyLong())).thenReturn(customer1);
+
+        //then
+        mockMvc.perform(get(CustomerController.BASE_URL + "/1/pathologies")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.pathologies", hasSize(2)));
     }
 }

@@ -2,10 +2,16 @@ package pt.home.controllers.v1;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import pt.home.api.v1.model.ConsultationListDTO;
 import pt.home.api.v1.model.CustomerDTO;
 import pt.home.api.v1.model.CustomerListDTO;
+import pt.home.api.v1.model.PathologyListDTO;
 import pt.home.services.CustomerService;
 
+import java.util.ArrayList;
+
+@EnableWebMvc
 @RestController
 @RequestMapping(CustomerController.BASE_URL)
 public class CustomerController {
@@ -46,6 +52,18 @@ public class CustomerController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteCustomer(@PathVariable Long id){
         customerService.deleteCustomerById(id);
+    }
+
+    @GetMapping({"/{id}/consultations"})
+    @ResponseStatus(HttpStatus.OK)
+    public ConsultationListDTO getConsultationsByCustomerId(@PathVariable Long id){
+        return new ConsultationListDTO(new ArrayList<>(customerService.getCustomerById(id).getConsultations()));
+    }
+
+    @GetMapping({"/{id}/pathologies"})
+    @ResponseStatus(HttpStatus.OK)
+    public PathologyListDTO getPathologiesByCustomerId(@PathVariable Long id){
+        return new PathologyListDTO(new ArrayList<>(customerService.getCustomerById(id).getPathologies()));
     }
 
 }

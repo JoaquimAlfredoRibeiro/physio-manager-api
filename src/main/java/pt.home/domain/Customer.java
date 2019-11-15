@@ -1,20 +1,17 @@
 package pt.home.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"pathologies", "consultations"})
 public class Customer {
 
     @Id
@@ -26,6 +23,10 @@ public class Customer {
     private String email;
     private String address;
 
-//    private Set<Pathology> pathologies;
-//    private Set<Consultation> consultations;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "customer_pathologies", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "pathology_id"))
+    private Set<Pathology> pathologies = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "customer")
+    private Set<Consultation> consultations = new HashSet<>();
 }

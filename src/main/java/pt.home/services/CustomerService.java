@@ -15,6 +15,4 @@ public interface CustomerService {
     CustomerDTO saveCustomerByDTO(Long id, CustomerDTO customerDTO);
 
     void deleteCustomerById(Long id);
-
-    //TODO implement getPathologies and getConsultations
 }

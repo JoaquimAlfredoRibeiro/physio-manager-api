@@ -2,7 +2,6 @@ package pt.home.controllers.v1;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import pt.home.api.v1.model.ConsultationListDTO;
 import pt.home.api.v1.model.CustomerDTO;
 import pt.home.api.v1.model.CustomerListDTO;
@@ -11,7 +10,6 @@ import pt.home.services.CustomerService;
 
 import java.util.ArrayList;
 
-@EnableWebMvc
 @RestController
 @RequestMapping(CustomerController.BASE_URL)
 public class CustomerController {

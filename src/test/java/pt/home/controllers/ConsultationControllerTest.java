@@ -12,10 +12,13 @@ import pt.home.api.v1.model.ConsultationDTO;
 import pt.home.controllers.v1.ConsultationController;
 import pt.home.services.ConsultationService;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -55,5 +58,37 @@ public class ConsultationControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.consultations", hasSize(2)));
+    }
+
+    @Test
+    public void testGetConsultationsByDate() throws Exception{
+
+        //given
+        ConsultationDTO consultationDTO1 = ConsultationDTO.builder().id(1L).description("Description1").build();
+        ConsultationDTO consultationDTO2 = ConsultationDTO.builder().id(1L).description("Description2").build();
+        List<ConsultationDTO> consultationDTOs = Arrays.asList(consultationDTO1, consultationDTO2);
+
+        when(consultationService.getConsultationsByDate(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(consultationDTOs);
+
+        //then
+        mockMvc.perform(get(ConsultationController.BASE_URL + "/20191111/20191112")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.consultations", hasSize(2)));
+    }
+
+    @Test
+    public void testGetConsultationsByDateNoResults() throws Exception{
+
+        //given
+        List<ConsultationDTO> consultationDTOs = new ArrayList<>();
+
+        when(consultationService.getConsultationsByDate(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(consultationDTOs);
+
+        //then
+        mockMvc.perform(get(ConsultationController.BASE_URL + "/20191111/20191112")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.consultations", hasSize(0)));
     }
 }

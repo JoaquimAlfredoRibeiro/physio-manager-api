@@ -1,11 +1,13 @@
 package pt.home.controllers.v1;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import pt.home.api.v1.model.ConsultationListDTO;
 import pt.home.services.ConsultationService;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @RestController
@@ -28,11 +30,12 @@ public class ConsultationController {
 
     @GetMapping("/{startDate}/{endDate}")
     @ResponseStatus(HttpStatus.OK)
-    public ConsultationListDTO getConsultationsByDate(@PathVariable Date startDate, Date endDate){
-        //TODO implement this
+    public ConsultationListDTO getConsultationsByDate(@PathVariable("startDate") @DateTimeFormat(pattern = "yyyyMMdd") Date startDate, @PathVariable("endDate") @DateTimeFormat(pattern = "yyyyMMdd") Date endDate) {
+
         return new ConsultationListDTO(
-                consultationService.getConsultationsByDate(LocalDateTime.of(2019, 11, 11, 10, 30),
-                                                          LocalDateTime.of(2019, 11, 13, 10, 30)));
+                consultationService.getConsultationsByDate(LocalDateTime.ofInstant(startDate.toInstant(), ZoneId.systemDefault()),
+                                                           LocalDateTime.ofInstant(endDate.toInstant(), ZoneId.systemDefault())));
     }
+
 
 }
